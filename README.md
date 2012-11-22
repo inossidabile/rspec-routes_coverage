@@ -35,6 +35,10 @@ spec/requests/items_spec.rb:
       end
     end
 
+By default, pending routes will not be output in common spec pass. To show them you should run:
+
+    $ RAILS_ENV=test rake spec:requests:with_coverage
+
 ## TODO
 
 1. Make untested routes to be marked as pending specs
