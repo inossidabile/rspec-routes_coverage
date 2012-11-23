@@ -10,8 +10,8 @@ module RSpec
 
         describe *args do
           before :all do
-            RSpec::RoutesCoverage.remove_pending_route verb, path
-          end if RSpec::RoutesCoverage.pending_routes?
+            RSpec::RoutesCoverage.manually_remove_pending_route verb, path
+          end
 
           instance_eval(&block) if block
         end

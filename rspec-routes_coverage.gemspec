@@ -16,5 +16,6 @@ Gem::Specification.new do |gem|
   gem.version       = RSpec::RoutesCoverage::VERSION
 
   gem.add_dependency 'rspec-rails'
+  gem.add_dependency 'colored'
   gem.add_dependency 'actionpack'
 end
