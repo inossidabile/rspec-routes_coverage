@@ -41,7 +41,7 @@ By default, pending routes will not be output in common spec pass. To show them 
 
 ## TODO
 
-0. Make "auto marking" with get/post/put/etc... methods
+0. Make possibility to exclude some routes/namespaces from coverage
 1. Make untested routes to be marked as pending specs
 2. Gem tests :)
 3. ?????

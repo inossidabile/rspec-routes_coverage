@@ -83,31 +83,14 @@ if ENV['WITH_ROUTES_COVERAGE']
         end
       end
 
-      puts "\n\n"
-      puts '-------------------'.yellow
-      puts "PENDING ROUTES (#{RSpec::RoutesCoverage.pending_routes.length} OF #{RSpec::RoutesCoverage.routes_num})".yellow
-      puts '-------------------'.yellow
-      puts "\n\n"
-      inspector.format(RSpec::RoutesCoverage.pending_routes).each do |route|
-        puts route
-      end
-
-      puts "\n\n"
-      puts '-------------------'.blue
-      puts "TESTED ROUTES (AUTOMATICALLY MARKED, #{RSpec::RoutesCoverage.auto_tested_routes.length} OF #{RSpec::RoutesCoverage.routes_num})".blue
-      puts '-------------------'.blue
-      puts "\n\n"
-      inspector.format(RSpec::RoutesCoverage.auto_tested_routes).each do |route|
-        puts route
-      end
-
-      puts "\n\n"
-      puts '-------------------'.green
-      puts "TESTED ROUTES (MANUALLY MARKED, #{RSpec::RoutesCoverage.manually_tested_routes.length} OF #{RSpec::RoutesCoverage.routes_num})".green
-      puts '-------------------'.green
-      puts "\n\n"
-      inspector.format(RSpec::RoutesCoverage.manually_tested_routes).each do |route|
-        puts route
+      { yellow: :pending_routes, blue: :auto_tested_routes, green: :manually_tested_routes }.each do |color, name|
+        puts "\n\n"
+        puts '------------------------'.send(color)
+        puts "#{name.to_s.humanize.upcase} (#{RSpec::RoutesCoverage.send(name).length} OF #{RSpec::RoutesCoverage.routes_num})".send(color)
+        puts '------------------------'.send(color)
+        inspector.format(RSpec::RoutesCoverage.send(name)).each do |route|
+          puts route.send(color)
+        end unless color == :green
       end
     end
   end
