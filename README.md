@@ -55,7 +55,7 @@ By default it contains no details. To get the complete listing of routes belongi
 
 Alternatively you can run the following Rake task (ships with the gem):
 
-    $ rake spec:requests:with_coverage
+    $ rake spec:requests:coverage
 
 ## TODO
 
