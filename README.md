@@ -18,18 +18,18 @@ And then execute:
 spec/requests/items_spec.rb:
 
     require 'spec_helper'
-    describe ItemsController, request_path: '/items' do
-      describe_request :index, request_path: '/', method: 'GET' do
+    describe ItemsController do
+      describe_request :index, request_path: '/items', method: 'GET' do
         it 'lists items' do
-          perform_example_request # same as "get '/items/'"
+          get '/items'
           # ...
         end
       end
 
       # another style:
-      describe_request 'GET /:id' do
+      describe_request 'GET /items/:id' do
         it 'shows item' do
-          perform_example_request id: Item.first.id
+          get "/items/#{Item.first.id}"
           # ...
         end
       end
@@ -37,10 +37,11 @@ spec/requests/items_spec.rb:
 
 By default, pending routes will not be output in common spec pass. To show them you should run:
 
-    $ RAILS_ENV=test rake spec:requests:with_coverage
+    $ RAILS_ENV=test bundle exec rake spec:requests:with_coverage
 
 ## TODO
 
+0. Make "auto marking" with get/post/put/etc... methods
 1. Make untested routes to be marked as pending specs
 2. Gem tests :)
 3. ?????

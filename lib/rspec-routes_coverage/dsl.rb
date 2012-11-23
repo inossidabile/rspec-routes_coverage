@@ -2,19 +2,15 @@ module RSpec
   module RoutesCoverage
     module DSL
       def describe_request(*args, &block)
-        unless args.last.is_a?(Hash) && args.last[:method] && args.last[:request_path]
-          verb, path = args[0].split ' '
-          opts = { method: verb, request_path: path }
-          if args.last.is_a? Hash
-            args.last.merge! opts
-          else
-            args << opts
-          end
+        verb, path = if args.last.is_a?(Hash) && args.last[:method] && args.last[:request_path]
+          [args.last[:method], args.last[:request_path]]
+        else
+          args[args[1].is_a?(String) ? 1 : 0].split ' '
         end
 
         describe *args do
           before :all do
-            RSpec::RoutesCoverage.remove_pending_route get_example_request_verb, get_example_request_path
+            RSpec::RoutesCoverage.remove_pending_route verb, path
           end if RSpec::RoutesCoverage.pending_routes?
 
           instance_eval(&block) if block

@@ -1,6 +1,5 @@
 require 'rspec/rails'
 require 'rspec-routes_coverage/dsl'
-require 'rspec-routes_coverage/helpers'
 
 module RSpec
   module RoutesCoverage
@@ -23,14 +22,13 @@ module RSpec
     end
 
     def self.pending_routes?
-      initialize_routes! if ENV['WITH_ROUTES_COVERAGE'] && !@initialized
-      self.pending_routes.length > 0
+      initialize_routes! if ENV['WITH_ROUTES_COVERAGE'] && !self.pending_routes
+      ENV['WITH_ROUTES_COVERAGE'] && self.pending_routes.length > 0
     end
 
     def self.initialize_routes!
       ::Rails.application.reload_routes!
       self.pending_routes = ::Rails.application.routes.routes.routes.clone
-      @initialized = true
     end
   end
 end
