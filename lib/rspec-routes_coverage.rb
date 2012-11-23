@@ -1,5 +1,7 @@
+require 'colored'
 require 'rspec/rails'
 require 'rspec-routes_coverage/dsl'
+require 'rspec-routes_coverage/request_override'
 
 module RSpec
   module RoutesCoverage
@@ -34,21 +36,18 @@ module RSpec
     end
 
     def self.recognize_route(verb, path)
-      if RSpec::RoutesCoverage.pending_routes?
-        env = Rack::MockRequest.env_for path, method: verb.upcase
-        req = ::Rails.application.routes.request_class.new env
-        ::Rails.application.routes.router.recognize(req) do |route|
-          yield route
-        end
+      initialize_routes!
+
+      env = Rack::MockRequest.env_for path, method: verb.upcase
+      req = ::Rails.application.routes.request_class.new env
+      ::Rails.application.routes.router.recognize(req) do |route|
+        yield route
       end
     end
 
-    def self.pending_routes?
-      initialize_routes! if ENV['WITH_ROUTES_COVERAGE'] && !self.pending_routes
-      !!ENV['WITH_ROUTES_COVERAGE']
-    end
-
     def self.initialize_routes!
+      return if self.pending_routes
+
       ::Rails.application.reload_routes!
       self.pending_routes         = ::Rails.application.routes.routes.routes.clone
       self.routes_num             = self.pending_routes.length
@@ -58,40 +57,42 @@ module RSpec
   end
 end
 
-if ENV['WITH_ROUTES_COVERAGE']
-  require 'rspec-routes_coverage/request_override'
-  require 'colored'
+RSpec.configure do |config|
+  config.after(:suite) do
+    inspector = begin
+      require 'rails/application/route_inspector'
+      Rails::Application::RouteInspector
+    rescue
+      require 'action_dispatch/routing/inspector'
+      ActionDispatch::Routing::RoutesInspector
+    end.new
 
-  RSpec.configure do |config|
-    config.after(:suite) do
-      inspector = begin
-        require 'rails/application/route_inspector'
-        Rails::Application::RouteInspector
-      rescue
-        require 'action_dispatch/routing/inspector'
-        ActionDispatch::Routing::RoutesInspector
-      end.new
+    inspector.instance_eval do
+      def formatted_routes(routes)
+        verb_width = routes.map{ |r| r[:verb].length }.max
+        path_width = routes.map{ |r| r[:path].length }.max
 
-      inspector.instance_eval do
-        def formatted_routes(routes)
-          verb_width = routes.map{ |r| r[:verb].length }.max
-          path_width = routes.map{ |r| r[:path].length }.max
-
-          routes.map do |r|
-            "#{r[:verb].ljust(verb_width)} #{r[:path].ljust(path_width)} #{r[:reqs]}"
-          end
+        routes.map do |r|
+          "#{r[:verb].ljust(verb_width)} #{r[:path].ljust(path_width)} #{r[:reqs]}"
         end
       end
+    end
 
-      { yellow: :pending_routes, blue: :auto_tested_routes, green: :manually_tested_routes }.each do |color, name|
+    if ENV['LIST_ROUTES_COVERAGE']
+      { green: :manually_tested_routes, blue: :auto_tested_routes, yellow: :pending_routes }.each do |color, name|
         puts "\n\n"
-        puts '------------------------'.send(color)
-        puts "#{name.to_s.humanize.upcase} (#{RSpec::RoutesCoverage.send(name).length} OF #{RSpec::RoutesCoverage.routes_num})".send(color)
-        puts '------------------------'.send(color)
+        puts "#{name.to_s.humanize} (#{RSpec::RoutesCoverage.send(name).length}/#{RSpec::RoutesCoverage.routes_num})".send(color).bold
+        puts "\n"
         inspector.format(RSpec::RoutesCoverage.send(name)).each do |route|
-          puts route.send(color)
-        end unless color == :green
+          puts '  ' + route.send(color)
+        end
       end
+    else
+      puts  "\n\n"
+      puts  'Routes coverage stats:'
+      puts  "  Manually tested: #{RSpec::RoutesCoverage.manually_tested_routes.length}/#{RSpec::RoutesCoverage.routes_num}".green
+      puts  "      Auto tested: #{RSpec::RoutesCoverage.auto_tested_routes.length}/#{RSpec::RoutesCoverage.routes_num}".blue
+      print "          Pending: #{RSpec::RoutesCoverage.pending_routes.length}/#{RSpec::RoutesCoverage.routes_num}".yellow
     end
   end
 end
