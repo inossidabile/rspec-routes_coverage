@@ -1,0 +1,1 @@
+require 'rspec-routes_coverage'
