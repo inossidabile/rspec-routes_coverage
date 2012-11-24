@@ -74,9 +74,6 @@ Alternatively you can run the following Rake task (ships with the gem):
 <img src="http://roundlake.ru/assets/logo.png" align="right" />
 
 * Andrew Shaydurov ([@sandrew](https://github.com/sandrew))
-
-## Contributors
-
 * Boris Staal ([@_inossidabile](http://twitter.com/#!/_inossidabile))
 
 ## LICENSE
