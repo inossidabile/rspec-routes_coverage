@@ -21,10 +21,8 @@ module RSpec
 
     def self.auto_remove_pending_route(verb, path)
       recognize_route(verb, path) do |route|
-        unless manually_tested_routes.include? route
-          pending_routes.delete route
-          auto_tested_routes << route unless auto_tested_routes.include?(route)
-        end
+        auto_tested_routes << route unless auto_tested_routes.include?(route)
+        pending_routes.delete route
       end
     end
 
@@ -32,7 +30,6 @@ module RSpec
       recognize_route(verb, path) do |route|
         manually_tested_routes << route unless manually_tested_routes.include?(route)
         pending_routes.delete route
-        auto_tested_routes.delete route
       end
     end
 
