@@ -2,10 +2,10 @@
 require File.expand_path('../lib/rspec-routes_coverage/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Andrew Shaydurov"]
-  gem.email         = ["a.shaydurov@roundlake.ru"]
-  gem.description   = %q{This gem allows to specify and track the coverage of tested API requests according to app's routes.}
-  gem.summary       = %q{This gem allows to specify and track the coverage of tested API requests according to app's routes.}
+  gem.authors       = ["Andrew Shaydurov", "Boris Staal"]
+  gem.email         = ["a.shaydurov@roundlake.ru", "boris@roundlake.ru"]
+  gem.description   = %q{Rails-RSpec plugin that will track the coverage of routes among your request specs}
+  gem.summary       = %q{Rails-RSpec plugin that will track the coverage of routes among your request specs}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
