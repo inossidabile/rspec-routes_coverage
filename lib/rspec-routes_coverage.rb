@@ -49,7 +49,10 @@ module RSpec
       return if self.pending_routes
 
       ::Rails.application.reload_routes!
-      self.pending_routes         = ::Rails.application.routes.routes.routes.clone
+      self.pending_routes = ::Rails.application.routes.routes.routes.clone.select do |x|
+        x # TODO: Respect RSpec.configuration.routes_coverage excludes in here
+      end
+
       self.routes_num             = self.pending_routes.length
       self.auto_tested_routes     = []
       self.manually_tested_routes = []
@@ -58,6 +61,9 @@ module RSpec
 end
 
 RSpec.configure do |config|
+  config.add_setting :routes_coverage
+  config.routes_coverage = OpenStruct.new
+
   config.after(:suite) do
     inspector = begin
       require 'rails/application/route_inspector'
