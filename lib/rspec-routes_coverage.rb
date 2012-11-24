@@ -122,8 +122,10 @@ RSpec.configure do |config|
       }
 
       legend.each do |color, name|
+        total = name == :excluded_routes ? RSpec::RoutesCoverage.routes_num : RSpec::RoutesCoverage.tested_routes_num
+
         puts "\n\n"
-        puts "#{name.to_s.humanize} (#{RSpec::RoutesCoverage.send(name).length}/#{RSpec::RoutesCoverage.routes_num})".send(color).bold
+        puts "#{name.to_s.humanize} (#{RSpec::RoutesCoverage.send(name).length}/#{total})".send(color).bold
         puts "\n"
         inspector.format(RSpec::RoutesCoverage.send(name)).each do |route|
           puts '  ' + route.send(color)
