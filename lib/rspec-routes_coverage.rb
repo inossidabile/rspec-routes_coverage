@@ -75,6 +75,8 @@ RSpec.configure do |config|
   config.routes_coverage.exclude_routes = []
 
   config.after(:suite) do
+    RSpec::RoutesCoverage.initialize_routes!
+
     inspector = begin
       require 'rails/application/route_inspector'
       Rails::Application::RouteInspector
