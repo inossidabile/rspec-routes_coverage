@@ -16,6 +16,7 @@ module RSpec
     mattr_accessor :pending_routes
     mattr_accessor :auto_tested_routes
     mattr_accessor :manually_tested_routes
+    mattr_accessor :tested_routes_num
     mattr_accessor :routes_num
 
     def self.auto_remove_pending_route(verb, path)
@@ -49,11 +50,20 @@ module RSpec
       return if self.pending_routes
 
       ::Rails.application.reload_routes!
-      self.pending_routes = ::Rails.application.routes.routes.routes.clone.select do |x|
-        x # TODO: Respect RSpec.configuration.routes_coverage excludes in here
+      self.pending_routes = ::Rails.application.routes.routes.routes.clone
+
+      selector  = []
+      selector += RSpec.configuration.routes_coverage.exclude_namespaces.map do |n|
+        "^/#{n}/"
       end
 
-      self.routes_num             = self.pending_routes.length
+      unless selector.blank?
+        selector = /(#{selector.join(')|(')})/
+        self.pending_routes.select!{|x| (x.path.spec.to_s =~ selector).nil?}
+      end
+
+      self.routes_num             = ::Rails.application.routes.routes.routes.length
+      self.tested_routes_num      = self.pending_routes.length
       self.auto_tested_routes     = []
       self.manually_tested_routes = []
     end
@@ -63,6 +73,9 @@ end
 RSpec.configure do |config|
   config.add_setting :routes_coverage
   config.routes_coverage = OpenStruct.new
+
+  config.routes_coverage.exclude_namespaces = []
+  config.routes_coverage.exclude_routes = []
 
   config.after(:suite) do
     inspector = begin
@@ -96,9 +109,10 @@ RSpec.configure do |config|
     else
       puts  "\n\n"
       puts  'Routes coverage stats:'
-      puts  "  Manually tested: #{RSpec::RoutesCoverage.manually_tested_routes.length}/#{RSpec::RoutesCoverage.routes_num}".green
-      puts  "      Auto tested: #{RSpec::RoutesCoverage.auto_tested_routes.length}/#{RSpec::RoutesCoverage.routes_num}".blue
-      print "          Pending: #{RSpec::RoutesCoverage.pending_routes.length}/#{RSpec::RoutesCoverage.routes_num}".yellow
+      puts  "   Routes to test: #{RSpec::RoutesCoverage.tested_routes_num}/#{RSpec::RoutesCoverage.routes_num}".magenta
+      puts  "  Manually tested: #{RSpec::RoutesCoverage.manually_tested_routes.length}/#{RSpec::RoutesCoverage.tested_routes_num}".green
+      puts  "      Auto tested: #{RSpec::RoutesCoverage.auto_tested_routes.length}/#{RSpec::RoutesCoverage.tested_routes_num}".blue
+      print "          Pending: #{RSpec::RoutesCoverage.pending_routes.length}/#{RSpec::RoutesCoverage.tested_routes_num}".yellow
     end
   end
 end
