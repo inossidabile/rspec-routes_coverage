@@ -14,6 +14,7 @@ module RSpec
     end
 
     mattr_accessor :pending_routes
+    mattr_accessor :excluded_routes
     mattr_accessor :auto_tested_routes
     mattr_accessor :manually_tested_routes
     mattr_accessor :tested_routes_num
@@ -47,22 +48,38 @@ module RSpec
       return if self.pending_routes
 
       ::Rails.application.reload_routes!
-      self.pending_routes = ::Rails.application.routes.routes.routes.clone
 
+      self.pending_routes         = ::Rails.application.routes.routes.routes.clone
+      self.excluded_routes        = []
+      self.auto_tested_routes     = []
+      self.manually_tested_routes = []
+
+      # Skip config.exclude_routes
+      unless RSpec.configuration.routes_coverage.exclude_routes.blank?
+        selector = Regexp.union(*RSpec.configuration.routes_coverage.exclude_routes)
+        self.pending_routes.select! do |x|
+          keep = ("#{x.verb.to_s[8..-3]} #{x.path.spec}".strip =~ selector).nil?
+          self.excluded_routes << x unless keep
+          keep
+        end
+      end
+
+      # Skip config.exclude_namespaces
       selector  = []
       selector += RSpec.configuration.routes_coverage.exclude_namespaces.map do |n|
         "^/#{n}/"
       end
-
       unless selector.blank?
         selector = /(#{selector.join(')|(')})/
-        self.pending_routes.select!{|x| (x.path.spec.to_s =~ selector).nil?}
+        self.pending_routes.select! do |x| 
+          keep = (x.path.spec.to_s =~ selector).nil?
+          self.excluded_routes << x unless keep
+          keep
+        end
       end
 
-      self.routes_num             = ::Rails.application.routes.routes.routes.length
-      self.tested_routes_num      = self.pending_routes.length
-      self.auto_tested_routes     = []
-      self.manually_tested_routes = []
+      self.routes_num        = ::Rails.application.routes.routes.routes.length
+      self.tested_routes_num = self.pending_routes.length
     end
   end
 end
@@ -97,7 +114,14 @@ RSpec.configure do |config|
     end
 
     if ENV['LIST_ROUTES_COVERAGE']
-      { green: :manually_tested_routes, blue: :auto_tested_routes, yellow: :pending_routes }.each do |color, name|
+      legend = { 
+        magenta: :excluded_routes,
+        green:   :manually_tested_routes,
+        blue:    :auto_tested_routes,
+        yellow:  :pending_routes 
+      }
+
+      legend.each do |color, name|
         puts "\n\n"
         puts "#{name.to_s.humanize} (#{RSpec::RoutesCoverage.send(name).length}/#{RSpec::RoutesCoverage.routes_num})".send(color).bold
         puts "\n"

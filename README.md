@@ -57,9 +57,19 @@ Alternatively you can run the following Rake task (ships with the gem):
 
     $ rake spec:requests:coverage
 
-## TODO
+## Excluding routes
 
-* Add the possibility to exclude some routes/namespaces from coverage analysis
+To skip routes you are not going to test you can use the following options:
+
+```ruby
+RSpec.configure do |config|
+  config.routes_coverage.exclude_namespaces = %w(back)
+  config.routes_coverage.exclude_routes = [
+    /GET \//,
+    /POST \/sessions.*/
+  ]
+end
+```
 
 ## Contributing
 
