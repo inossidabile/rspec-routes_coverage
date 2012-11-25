@@ -1,7 +1,7 @@
 require 'colored'
 require 'rspec/rails'
-require 'rspec-routes_coverage/dsl'
-require 'rspec-routes_coverage/request_override'
+require 'rspec/routes_coverage/dsl'
+require 'rspec/routes_coverage/request_override'
 
 module RSpec
   module RoutesCoverage
@@ -9,7 +9,7 @@ module RSpec
       railtie_name :'rspec-routes_coverage'
 
       rake_tasks do
-        load "tasks/rspec-routes_coverage.rake"
+        load "tasks/rspec/routes_coverage.rake"
       end
     end
 
