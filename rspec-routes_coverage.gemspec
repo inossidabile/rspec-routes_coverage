@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["a.shaydurov@roundlake.ru", "boris@roundlake.ru"]
   gem.description   = %q{Rails-RSpec plugin that will track the coverage of routes among your request specs}
   gem.summary       = %q{Rails-RSpec plugin that will track the coverage of routes among your request specs}
-  gem.homepage      = "https://github.com/roundlake/rspec-routes_coverage"
+  gem.homepage      = "https://github.com/inossidabile/rspec-routes_coverage"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
