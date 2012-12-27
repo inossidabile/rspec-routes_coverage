@@ -49,7 +49,10 @@ module RSpec
 
       ::Rails.application.reload_routes!
 
-      self.pending_routes         = ::Rails.application.routes.routes.routes.clone
+      self.pending_routes = ::Rails.application.routes.routes.routes.select{|x|
+        !x.app.is_a?(Sprockets::Environment)
+      }
+
       self.excluded_routes        = []
       self.auto_tested_routes     = []
       self.manually_tested_routes = []
