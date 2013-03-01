@@ -84,7 +84,7 @@ end
 <img src="http://roundlake.ru/assets/logo.png" align="right" />
 
 * Andrew Shaydurov ([@sandrew](https://github.com/sandrew))
-* Boris Staal ([@_inossidabile](http://twitter.com/#!/_inossidabile))
+* Boris Staal ([@_inossidabile](http://twitter.com/#!/_inossidabile)) [![endorse](http://api.coderwall.com/inossidabile/endorsecount.png)](http://coderwall.com/inossidabile)
 
 ## LICENSE
 
