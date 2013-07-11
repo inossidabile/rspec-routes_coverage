@@ -2,6 +2,8 @@
 
 Rails-RSpec plugin that will track the coverage of routes among your request specs. Intended for massive Rails JSON backends.
 
+[![endorse](http://api.coderwall.com/inossidabile/endorsecount.png)](http://coderwall.com/inossidabile)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -71,19 +73,10 @@ RSpec.configure do |config|
 end
 ```
 
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
 ## Credits
 
-* Andrew Shaydurov ([@sandrew](https://github.com/sandrew))
-* Boris Staal ([@_inossidabile](http://twitter.com/#!/_inossidabile)) [![endorse](http://api.coderwall.com/inossidabile/endorsecount.png)](http://coderwall.com/inossidabile)
+Kudos for the original idea and basic implementation go to Andrew Shaydurov ([@sandrew](https://github.com/sandrew))
 
-## LICENSE
+## License
 
 It is free software, and may be redistributed under the terms of MIT license.
