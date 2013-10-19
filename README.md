@@ -80,3 +80,6 @@ Kudos for the original idea and basic implementation go to Andrew Shaydurov ([@s
 ## License
 
 It is free software, and may be redistributed under the terms of MIT license.
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/inossidabile/rspec-routes_coverage/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
